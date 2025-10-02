@@ -1,0 +1,19 @@
+{
+  "name": "skycast",
+  "version": "1.0.0",
+  "description": "A simple weather application that provides real-time weather data and forecasts for cities worldwide. Users can search for a city to get current weather conditions, including temperature, humidity, and wind speed, as well as a 5-day forecast. The app features a clean, user-friendly interface with dynamic weather icons and background images.",
+  "main": "script.js",
+  "homepage": "https://TylerLeHere.github.io/SkyCast",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "gh-pages -d dist"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "gh-pages": "^6.3.0",
+    "vite": "^7.1.7"
+  }
+}
