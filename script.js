@@ -68,26 +68,12 @@ async function initializeApp() {
   checkOnlineStatus()
   createSuggestionsDropdown()
 
-  // Try to load cached weather first
   const cachedWeather = loadCachedWeather()
   if (cachedWeather) {
     updateUI(cachedWeather)
     showNotification("Showing cached weather data", "info")
-  }
-
-  // Try to get user's location
-  if (navigator.geolocation) {
-    try {
-      showInitialMessage()
-    } catch (error) {
-      if (!cachedWeather) {
-        showInitialMessage()
-      }
-    }
   } else {
-    if (!cachedWeather) {
-      showInitialMessage()
-    }
+    showInitialMessage()
   }
 }
 
@@ -597,7 +583,10 @@ function groupForecastByDay(forecastList) {
 
 // UI Updates
 function updateUI(data) {
-  if (!data) return
+  if (!data) {
+    showInitialMessage()
+    return
+  }
 
   updateCurrentWeather(data)
   updateHourlyForecast(data.forecast.hourly)
@@ -942,12 +931,43 @@ function saveFavorites() {
 }
 
 function cacheWeatherData(data) {
-  localStorage.setItem(CACHE_KEYS.LAST_WEATHER, JSON.stringify(data))
+  try {
+    localStorage.setItem(CACHE_KEYS.LAST_WEATHER, JSON.stringify(data))
+  } catch (error) {
+    console.error("Error caching weather data:", error)
+  }
 }
 
 function loadCachedWeather() {
-  const cached = localStorage.getItem(CACHE_KEYS.LAST_WEATHER)
-  return cached ? JSON.parse(cached) : null
+  try {
+    const cachedData = localStorage.getItem(CACHE_KEYS.LAST_WEATHER)
+    if (!cachedData) return null
+
+    const data = JSON.parse(cachedData)
+
+    // Check for expiration (30 minutes)
+    const now = new Date()
+    const lastUpdate = new Date(data.lastUpdate)
+    const diffMinutes = (now - lastUpdate) / (1000 * 60)
+
+    if (diffMinutes > 30) {
+      console.log("Cached data expired.")
+      localStorage.removeItem(CACHE_KEYS.LAST_WEATHER) // Clear expired cache
+      return null
+    }
+
+    // Make sure dates are parsed correctly
+    data.lastUpdate = lastUpdate
+    data.sun.sunrise = new Date(data.sun.sunrise)
+    data.sun.sunset = new Date(data.sun.sunset)
+    data.forecast.hourly.forEach((h) => (h.time = new Date(h.time)))
+    data.forecast.daily.forEach((d) => (d.date = new Date(d.date)))
+
+    return data
+  } catch (error) {
+    console.error("Error loading cached weather:", error)
+    return null
+  }
 }
 
 // Initialize app when DOM is loaded

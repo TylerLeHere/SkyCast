@@ -36,7 +36,16 @@ html {
 }
 
 body {
-  background: linear-gradient(135deg, var(--background-gradient-start) 0%, var(--background-gradient-end) 100%);
+  background: linear-gradient(
+      135deg,
+      rgba(26, 54, 93, 0.8) 0%,
+      rgba(43, 108, 176, 0.8) 100%
+    ),
+    url("assets/bg.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
@@ -359,6 +368,28 @@ body {
   animation: fadeIn 0.5s ease-out;
 }
 
+@media (min-width: 1024px) {
+  .weather-container {
+    grid-template-columns: 4fr 3fr;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "current hourly"
+      "current daily";
+  }
+
+  .current-weather {
+    grid-area: current;
+  }
+
+  .hourly-forecast {
+    grid-area: hourly;
+  }
+
+  .daily-forecast {
+    grid-area: daily;
+  }
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -419,9 +450,15 @@ body {
 }
 
 .weather-display {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .weather-display {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .temperature-container {
@@ -679,7 +716,7 @@ body {
 
 .hourly-item {
   flex: 0 0 auto;
-  min-width: 100px;
+  min-width: 90px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -821,6 +858,8 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .forecast-temp {
